@@ -12,3 +12,4 @@ bst.insert(21)
 
 
 bst.visualize
+bst.preorder

@@ -58,7 +58,16 @@ class Bst
     node
   end
 
-  private
+  def visualize(node = @root, prefix = "", is_left = true)
+
+    visualize(node.right, "#{prefix}#{is_left ? "|     " : "     "}", false) if node.right
+
+    puts "#{prefix}#{is_left ? " └── " : " ┌── "}#{node.value}"
+
+    visualize(node.left, "#{prefix}#{is_left ? "     " : "|    "}", true) if node.left
+  end
+
+
   def removeHelper(value, node = self.root)
     if node == nil
       return nil
@@ -148,17 +157,52 @@ class Bst
     
   end
 
-  def in_order(node = @root &block)
-    return if node.nil?
+  def in_order(node = @root, &block)
+    in_order_list = []
+    inorder_traversal = lambda do |node|
+      return if node.nil? 
+      inorder_traversal.call(node.left)
+      in_order_list << node.value
+      inorder_traversal.call(node.right)
+    end
 
-    in_order(node.left, &block)
-    block.call(node)
-    in_order(node.right, &block)
+    inorder_traversal.call(node)
+    p in_order_list
+  end
+
+  def preorder(node = @root)
+    preorder_list = []
+
+    preorder_traversal = lambda do |node|
+      return if node.nil?
+      preorder_list << node.value
+      preorder_traversal.call(node.left)
+      preorder_traversal.call(node.right)
+    end
+
+    preorder_traversal.call(node)
+    p preorder_list
+  end
+
+  def post_order(node = @root)
+    post_order_list = []
+
+    post_order_traversal = lambda do |node|
+      return if node.nil?
+      post_order_traversal.call(node.left)
+      post_order_traversal.call(node.right)
+      post_order_list << node.value
+    end
+
+    post_order_traversal.call(node)
+    p post_order_list
   end
 
   def rebalance
     #method which rebalances an unbalanced tree. Tip: You’ll want to use a traversal method to provide a new array to the #build_tree method.
-    node []
+    nodes = []
+    in_order { |node| nodes << node.value}
+    @root = sorted_arr_bts(nodes, 0, nodes.length - 1)
   end
 
 
@@ -178,19 +222,4 @@ class Bst
       queue.push(node.right) unless node.right.nil?
     end
   end
-
-  
-  def visualize(node = @root, prefix = "", is_left = true)
-    return if node.nil?
-
-    visualize(node.right, "#{prefix}#{is_left ? "|     " : "     "}", false)
-
-    puts "#{prefix}#{is_left ? " └── " : " ┌── "}#{node.value}"
-
-    visualize(node.let, "#{prefix}#{is_left ? "     " : "|    "}", true)
-  end
- 
-
-
 end
-
